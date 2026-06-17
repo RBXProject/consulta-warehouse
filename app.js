@@ -2,7 +2,8 @@ const CONFIG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbzlNhIKt3OKPFFKGxkjkEhgD4rfruNgcsoG4pl6tc89GCKqBaPJs_rZ88JLotbj94Ug/exec',
   SHEET_ID: '10WtS_t2aa4JTlxW0d3VDy3a3w3eXSdJ2ulwQeFp6Y3o',
   SHEET_NAME: 'BASE_ESTOQUE',
-  CHUNK_SIZE: 2000
+  CHUNK_SIZE: 2000,
+  RENDER_BATCH: 50
 };
 
 const DB_NAME = 'GMINING_WAREHOUSE_DB';
@@ -12,6 +13,8 @@ const STORE_META = 'meta';
 let db;
 let localItems = [];
 let deferredPrompt = null;
+let currentResults = [];
+let renderedCount = 0;
 
 const $ = id => document.getElementById(id);
 const els = {
@@ -128,33 +131,55 @@ async function syncBase(force=false){
   }finally{ els.syncBtn.disabled=false; }
 }
 
+function createCard(item){
+  const card=document.createElement('article');
+  card.className='card '+item.statusClass;
+  card.innerHTML=`
+    <div class="codigo">${escapeHtml(item.codigo||'-')}</div>
+    <div class="descricao">${escapeHtml(item.descricao||'-')}</div>
+    <div class="grid">
+      <div><div class="label">Referência</div><div class="value">${escapeHtml(item.referencia||'-')}</div></div>
+      <div><div class="label">Tipo MRP</div><div class="value">${escapeHtml(item.tipoMrp||'-')}</div></div>
+      <div><div class="label">Estoque Livre</div><div class="value">${item.estoqueLivre}</div></div>
+      <div><div class="label">Estoque Mínimo</div><div class="value">${item.estoqueMinimo}</div></div>
+      <div><div class="label">Ponto Ressuprimento</div><div class="value">${item.ponto}</div></div>
+      <div><div class="label">Estoque Máximo</div><div class="value">${item.estoqueMaximo}</div></div>
+      <div><div class="label">Posição Depósito</div><div class="value">${escapeHtml(item.posDeposito||'-')}</div></div>
+      <div><div class="label">Valor Total</div><div class="value">${moneyBR(item.valorTotal)}</div></div>
+    </div>
+    <div class="longa">Descrição Longa: ${escapeHtml(item.descricaoLonga||'-')}</div>
+    <div class="status ${item.statusClass}"><span class="emoji">${item.statusEmoji}</span>${escapeHtml(item.status)}</div>`;
+  return card;
+}
+
+function renderNextBatch(){
+  const oldBtn=document.getElementById('loadMoreBtn');
+  if(oldBtn) oldBtn.remove();
+
+  const next=currentResults.slice(renderedCount, renderedCount + CONFIG.RENDER_BATCH);
+  const frag=document.createDocumentFragment();
+  next.forEach(item=>frag.appendChild(createCard(item)));
+  els.results.appendChild(frag);
+  renderedCount += next.length;
+
+  if(renderedCount < currentResults.length){
+    const btn=document.createElement('button');
+    btn.id='loadMoreBtn';
+    btn.className='load-more-btn';
+    btn.textContent=`Carregar mais (${renderedCount.toLocaleString('pt-BR')} de ${currentResults.length.toLocaleString('pt-BR')})`;
+    btn.addEventListener('click', renderNextBatch);
+    els.results.appendChild(btn);
+  }
+}
+
 function renderResults(items){
   els.results.innerHTML='';
-  els.resultCount.textContent=items.length.toLocaleString('pt-BR');
-  if(!items.length){ showMessage('Nenhum material encontrado.'); return; }
+  currentResults = items || [];
+  renderedCount = 0;
+  els.resultCount.textContent=currentResults.length.toLocaleString('pt-BR');
+  if(!currentResults.length){ showMessage('Nenhum material encontrado.'); return; }
   hideMessage();
-  const frag=document.createDocumentFragment();
-  items.forEach(item=>{
-    const card=document.createElement('article');
-    card.className='card '+item.statusClass;
-    card.innerHTML=`
-      <div class="codigo">${escapeHtml(item.codigo||'-')}</div>
-      <div class="descricao">${escapeHtml(item.descricao||'-')}</div>
-      <div class="grid">
-        <div><div class="label">Referência</div><div class="value">${escapeHtml(item.referencia||'-')}</div></div>
-        <div><div class="label">Tipo MRP</div><div class="value">${escapeHtml(item.tipoMrp||'-')}</div></div>
-        <div><div class="label">Estoque Livre</div><div class="value">${item.estoqueLivre}</div></div>
-        <div><div class="label">Estoque Mínimo</div><div class="value">${item.estoqueMinimo}</div></div>
-        <div><div class="label">Ponto Ressuprimento</div><div class="value">${item.ponto}</div></div>
-        <div><div class="label">Estoque Máximo</div><div class="value">${item.estoqueMaximo}</div></div>
-        <div><div class="label">Posição Depósito</div><div class="value">${escapeHtml(item.posDeposito||'-')}</div></div>
-        <div><div class="label">Valor Total</div><div class="value">${moneyBR(item.valorTotal)}</div></div>
-      </div>
-      <div class="longa">Descrição Longa: ${escapeHtml(item.descricaoLonga||'-')}</div>
-      <div class="status ${item.statusClass}"><span class="emoji">${item.statusEmoji}</span>${escapeHtml(item.status)}</div>`;
-    frag.appendChild(card);
-  });
-  els.results.appendChild(frag);
+  renderNextBatch();
 }
 function escapeHtml(value){ return String(value??'').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 function search(){

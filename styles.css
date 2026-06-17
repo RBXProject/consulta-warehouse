@@ -21,3 +21,8 @@ html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;backgr
 .footerbar{height:58px;background:#fff;border-top:4px solid var(--gold);position:fixed;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-around;z-index:20;color:#555}.footerbar strong{font-size:28px;font-weight:400;letter-spacing:.5px}.footerbar div{text-align:center;width:90px}.footerbar small{display:block;font-size:11px}.dot{display:inline-block;width:12px;height:12px;background:#35b738;border-radius:50%}.box-dot{color:#d4a100;font-size:20px;font-weight:bold;line-height:12px}
 @media (max-width:600px){.topbar{height:92px;padding:10px 12px}.brand{width:112px}.brand img{width:44px;height:44px}.brand-text{font-size:11px}.topbar h1{font-size:32px}.globe{width:64px;font-size:30px}.search-title{font-size:17px}.main-area{padding:12px 14px 82px}.message{min-height:360px;font-size:18px}.card{margin:0 0 10px 0;border-radius:13px;padding:18px 16px 14px 30px}.codigo{font-size:27px}.descricao{font-size:23px}.grid{gap:14px 20px}.label,.value,.longa{font-size:19px}.status{font-size:23px;padding:16px}.footerbar strong{font-size:26px}}
 @media (min-width:900px){.card{margin-left:10px;margin-right:10px}.message{min-height:320px}}
+
+
+.load-more-btn{margin:8px 12px 18px;border:0;border-radius:10px;background:#0d3a67;color:#fff;font-weight:900;font-size:18px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.load-more-btn:active{transform:scale(.99)}
+@media (max-width:600px){.load-more-btn{margin:6px 0 16px;font-size:17px;padding:14px 12px}}
