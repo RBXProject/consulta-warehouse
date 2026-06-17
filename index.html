@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#286695" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="GMINING Warehouse" />
+  <title>Consulta Warehouse</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="icon-192.png" alt="G Mining" />
+        <div class="brand-text"><b>MINING<br>VENTURES</b><span>MINA TZ</span></div>
+      </div>
+      <h1>CONSULTA</h1>
+      <div class="globe">🌐</div>
+    </header>
+
+    <section class="search-title">CÓDIGO / DESCRIÇÃO / REFERÊNCIA</section>
+
+    <main class="main-area">
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Digite para consultar" autocomplete="off" />
+        <button id="searchBtn" type="button">🔎</button>
+      </div>
+
+      <div class="base-card">
+        <div>
+          <b>Base: <span id="baseName">BASE_ESTOQUE</span> | Itens: <span id="itemCount">0</span></b><br>
+          <span id="syncInfo">Última atualização local: -</span>
+          <a id="openSheet" href="https://docs.google.com/spreadsheets/d/10WtS_t2aa4JTlxW0d3VDy3a3w3eXSdJ2ulwQeFp6Y3o/edit?gid=0#gid=0" target="_blank">Abrir planilha</a>
+        </div>
+        <button id="syncBtn" type="button">Atualizar</button>
+      </div>
+
+      <div class="install-card" id="installCard">📱 Para instalar no Android: menu ⋮ do Chrome → <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</div>
+      <div id="connectionStatus" class="connection online">Online</div>
+      <div id="progressBox" class="progress-box hidden"></div>
+      <div id="message" class="message">Digite um código, descrição ou referência para consultar o estoque.</div>
+      <section id="results" class="results"></section>
+    </main>
+
+    <footer class="footerbar">
+      <div><span class="dot" id="onlineDot"></span><small id="onlineText">Online</small></div>
+      <strong>WAREHOUSE</strong>
+      <div><span class="box-dot">□</span><small id="resultCount">0</small></div>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
